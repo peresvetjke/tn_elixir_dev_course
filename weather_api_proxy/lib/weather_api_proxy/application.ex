@@ -5,19 +5,23 @@ defmodule WeatherApiProxy.Application do
 
   use Application
 
+  @registry :city_registry
+
   @impl true
   def start(_type, _args) do
     children = [
       # Start the Ecto repository
-      WeatherApiProxy.Repo,
+      # WeatherApiProxy.Repo,
       # Start the Telemetry supervisor
       WeatherApiProxyWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: WeatherApiProxy.PubSub},
       # Start the Endpoint (http/https)
-      WeatherApiProxyWeb.Endpoint
+      WeatherApiProxyWeb.Endpoint,
       # Start a worker by calling: WeatherApiProxy.Worker.start_link(arg)
       # {WeatherApiProxy.Worker, arg}
+      {WeatherApiProxy.App.CitySupervisor, []},
+      {Registry, [keys: :unique, name: @registry]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
