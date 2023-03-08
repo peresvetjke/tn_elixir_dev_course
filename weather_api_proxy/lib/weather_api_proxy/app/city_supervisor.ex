@@ -21,7 +21,7 @@ defmodule WeatherApiProxy.App.CitySupervisor do
   @spec start_child(String.t()) :: :ignore | {:error, any()} | {:ok, pid()} | {:ok, pid(), any()}
   def start_child(city_name) do
     # Shorthand to retrieve the child specification from the `child_spec/1` method of the given module.
-    child_specification = {City, city_name}
+    WeatherApiProxy.App.City.child_spec(city_name)
 
     DynamicSupervisor.start_child(__MODULE__, child_specification)
   end
