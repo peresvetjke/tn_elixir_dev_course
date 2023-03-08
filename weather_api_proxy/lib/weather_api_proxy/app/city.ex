@@ -53,19 +53,14 @@ defmodule WeatherApiProxy.App.City do
   def init(city_name) do
     Logger.info("Starting process #{city_name}")
 
-    result = case AccuWeatherApi.fetch_location_code(city_name) do
-      {:error, :not_found} ->
-        {:ok, %City{name: city_name, code: :not_found}}
-
-      {:ok, city_code} ->
-        case AccuWeatherApi.fetch_location_weather(city_code) do
-          {:ok, weather} -> {:ok, %City{name: city_name, code: city_code, current_weather: weather}}
-          {:error, error} -> {:error, error}
-        end
+    with {:ok, city_code} <- AccuWeatherApi.fetch_location_code(city_name),
+         {:ok, weather} <- AccuWeatherApi.fetch_location_weather(city_code) do
+           {:ok, %City{name: city_name, code: city_code, current_weather: weather}}
+    else
+      {:error, :not_found} -> {:ok, %City{name: city_name, code: :not_found, current_weather: 0.00}}
+      _ -> :ignore
     end
-
-    schedule_work()
-    result
+    |> tap(fn _ -> schedule_work() end)
   end
 
   @impl true
