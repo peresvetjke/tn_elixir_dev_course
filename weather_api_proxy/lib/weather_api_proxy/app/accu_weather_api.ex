@@ -13,7 +13,7 @@ defmodule WeatherApiProxy.App.AccuWeatherApi do
           [%{"Key" => key} | _] ->
             {:ok, key}
 
-          [] ->
+          _ ->
             {:error, :not_found}
         end
 
