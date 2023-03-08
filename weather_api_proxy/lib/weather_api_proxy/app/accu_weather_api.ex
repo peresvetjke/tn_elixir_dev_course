@@ -1,6 +1,4 @@
 defmodule WeatherApiProxy.App.AccuWeatherApi do
-  @api_key "SA5lAHPDxgRTHoGxdUEA0vOx0SrGyEPu"
-
   require Logger
 
   @spec fetch_location_code(String.t()) :: {:error, :not_found | :unknown_error} | {:ok, any}
@@ -37,10 +35,14 @@ defmodule WeatherApiProxy.App.AccuWeatherApi do
   end
 
   defp city_code_url(city_name) do
-    "http://dataservice.accuweather.com/locations/v1/cities/search?apikey=#{@api_key}&q=#{city_name}"
+    "http://dataservice.accuweather.com/locations/v1/cities/search?apikey=#{api_key()}&q=#{city_name}"
   end
 
   defp current_weather_url(city_code) do
-    "http://dataservice.accuweather.com/currentconditions/v1/#{city_code}?apikey=#{@api_key}"
+    "http://dataservice.accuweather.com/currentconditions/v1/#{city_code}?apikey=#{api_key()}"
+  end
+
+  defp api_key() do
+    Application.fetch_env!(:weather_api_proxy, :api_key)
   end
 end

@@ -13,7 +13,7 @@ defmodule WeatherApiProxy.App.City do
 
   @spec get_weather(String.t()) :: {:ok, float()} | {:error, :not_found}
   def get_weather(city_name) do
-    WeatherApiProxy.App.CitySupervisor.get_pid(city_name)
+    WeatherApiProxy.App.CitySupervisor.ensure_started(city_name)
     |> get_state()
     |> case do
       %City{code: :not_found} -> {:error, :not_found}
@@ -51,10 +51,9 @@ defmodule WeatherApiProxy.App.City do
 
   @impl true
   def init(city_name) do
-    schedule_work()
     Logger.info("Starting process #{city_name}")
 
-    case AccuWeatherApi.fetch_location_code(city_name) do
+    result = case AccuWeatherApi.fetch_location_code(city_name) do
       {:error, :not_found} ->
         {:ok, %City{name: city_name, code: :not_found}}
 
@@ -64,6 +63,9 @@ defmodule WeatherApiProxy.App.City do
           {:error, error} -> {:error, error}
         end
     end
+
+    schedule_work()
+    result
   end
 
   @impl true

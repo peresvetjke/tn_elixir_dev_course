@@ -5,8 +5,8 @@ defmodule WeatherApiProxy.App.CitySupervisor do
   use DynamicSupervisor
   alias WeatherApiProxy.App.City
 
-  @spec get_pid(String.t()) :: pid()
-  def get_pid(city_name) do
+  @spec ensure_started(String.t()) :: pid()
+  def ensure_started(city_name) do
     case start_child(city_name) do
       {:ok, pid} -> pid
       {:error, {:already_started, pid}} -> pid
@@ -21,7 +21,7 @@ defmodule WeatherApiProxy.App.CitySupervisor do
   @spec start_child(String.t()) :: :ignore | {:error, any()} | {:ok, pid()} | {:ok, pid(), any()}
   def start_child(city_name) do
     # Shorthand to retrieve the child specification from the `child_spec/1` method of the given module.
-    WeatherApiProxy.App.City.child_spec(city_name)
+    child_specification = WeatherApiProxy.App.City.child_spec(city_name)
 
     DynamicSupervisor.start_child(__MODULE__, child_specification)
   end
