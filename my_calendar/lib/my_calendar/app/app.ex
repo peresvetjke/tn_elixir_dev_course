@@ -46,7 +46,8 @@ defmodule MyCalendar.App do
 
   @spec list_meetings() :: list(Ecto.Schema.t())
   def list_meetings do
-    Repo.all(Meeting)
+    Meeting
+    |> Repo.all()
     |> Repo.preload([:organizator, :users])
   end
 
