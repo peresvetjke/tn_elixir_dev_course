@@ -71,7 +71,7 @@ defmodule MyCalendar.AppTest do
       organizator = %MyCalendar.App.User{login: "username", email: "username@example.com"}
 
       attrs = %{
-        date_time: DateTime.new!(~D[2023-01-01], ~T[10:00:00.000], "Etc/UTC"),
+        date_time: ~U[2023-01-01 10:00:00Z],
         duration_minutes: 60
       }
 
