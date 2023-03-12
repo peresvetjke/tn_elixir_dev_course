@@ -6,13 +6,14 @@ defmodule MyCalendar.App.User do
   alias MyCalendar.App.{Meeting, User, MeetingsUser}
 
   schema "users" do
-    field :login
-    field :email
-    many_to_many :meetings, Meeting, join_through: MeetingsUser
+    field(:login)
+    field(:email)
+    many_to_many(:meetings, Meeting, join_through: MeetingsUser)
 
     timestamps()
   end
 
+  @spec changeset(Ecto.Schema.t(), map()) :: Ecto.Changeset.t()
   def changeset(user, params \\ %{}) do
     user
     |> cast(params, [:login, :email])
@@ -20,6 +21,7 @@ defmodule MyCalendar.App.User do
     |> validate_format(:email, ~r/@/)
   end
 
+  @spec create(any()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
   def create(params) when is_list(params),
     do: params |> Map.new() |> create()
 
