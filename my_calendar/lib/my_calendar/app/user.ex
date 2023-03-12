@@ -21,7 +21,7 @@ defmodule MyCalendar.App.User do
     |> validate_format(:email, ~r/@/)
   end
 
-  @spec create(any()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
+  @spec create(list() | map()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
   def create(params) when is_list(params),
     do: params |> Map.new() |> create()
 
@@ -33,7 +33,4 @@ defmodule MyCalendar.App.User do
       changeset -> {:ok, apply_changes(changeset)}
     end
   end
-
-  def create(params),
-    do: {:error, [unknown_params_type: params]}
 end

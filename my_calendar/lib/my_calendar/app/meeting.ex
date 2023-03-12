@@ -23,7 +23,7 @@ defmodule MyCalendar.App.Meeting do
     |> validate_required([:date_time, :duration_minutes])
   end
 
-  @spec create(any()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
+  @spec create(list() | map()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
   def create(params) when is_list(params),
     do: params |> Map.new() |> create()
 

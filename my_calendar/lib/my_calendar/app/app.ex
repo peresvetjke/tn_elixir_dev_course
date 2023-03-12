@@ -6,38 +6,39 @@ defmodule MyCalendar.App do
   import Ecto.Query, only: [from: 2]
 
   @spec get_user(non_neg_integer()) :: Ecto.Schema.t() | nil
-  def get_user(id), do: Repo.get(User, id)
+  def get_user(id) do
+    User
+    |> Repo.get(id)
+  end
 
   @spec get_meeting(non_neg_integer()) :: Ecto.Schema.t()
   def get_meeting(id) do
-    Repo.get(Meeting, id)
+    Meeting
+    |> Repo.get(id)
     |> Repo.preload([:organizator, :users])
   end
 
   @spec get_meetings_by_date(Date.t()) :: list(Ecto.Schema.t())
   def get_meetings_by_date(date) do
-    dt_from = DateTime.new!(date, ~T[00:00:00])
-    dt_to = DateTime.new!(Date.add(date, 1), ~T[00:00:00])
-
-    Repo.all(from(m in Meeting, where: m.date_time >= ^dt_from and m.date_time < ^dt_to))
+    from(m in Meeting, where: fragment("cast(? as date)", m.date_time) == ^date)
+    |> Repo.all()
     |> Repo.preload([:organizator, :users])
   end
 
   @spec get_meetings_by_organizator_id(non_neg_integer()) :: list(Ecto.Schema.t())
   def get_meetings_by_organizator_id(organizator_id) do
-    Repo.all(from(m in Meeting, where: m.organizator_id == ^organizator_id))
+    from(m in Meeting, where: m.organizator_id == ^organizator_id)
+    |> Repo.all()
     |> Repo.preload([:organizator, :users])
   end
 
   @spec get_meetings_by_user_id(non_neg_integer()) :: list(Ecto.Schema.t())
   def get_meetings_by_user_id(user_id) do
-    query =
-      from(m in Meeting,
-        join: mu in MeetingsUser,
-        on: mu.meeting_id == m.id and mu.user_id == ^user_id
-      )
-
-    Repo.all(query)
+    from(m in Meeting,
+      join: mu in MeetingsUser,
+      on: mu.meeting_id == m.id and mu.user_id == ^user_id
+    )
+    |> Repo.all()
     |> Repo.preload([:organizator, :users])
   end
 
@@ -93,11 +94,13 @@ defmodule MyCalendar.App do
 
   @spec delete_user(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
   def delete_user(%User{} = user) do
-    Repo.delete(user)
+    user
+    |> Repo.delete()
   end
 
   @spec delete_meeting(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, any()}
   def delete_meeting(%Meeting{} = meeting) do
-    Repo.delete(meeting)
+    meeting
+    |> Repo.delete()
   end
 end
